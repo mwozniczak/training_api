@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "training-api"
+version = "0.1.0"
+description = "Simulated API that pretends it's for a social media-ish site."
+authors = [
+    "Michał Woźniczak <michal.wozniczak@gmail.com>",
+    "Michał Woźniczak (but getting paid for it) <michal.wozniczak@knowit.eu>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.121.0"
+polyfactory = "^2.22.3"
+uvicorn = {extras = ["standard"], version = "^0.38.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
