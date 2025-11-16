@@ -49,8 +49,7 @@ class PostLikeNotification(LikeNotification):
     post_uri: str
 
 
-class RecentNotifications(BaseModel):
-    items: list[NewPostNotification|NewPostNotification|CommentLikeNotification]
+SomeKindOfNotification = NewPostNotification|PostLikeNotification|CommentLikeNotification
 
 
 class PaginatedObject(GenericModel, Generic[T]):

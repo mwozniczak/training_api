@@ -1,5 +1,3 @@
-from random import randint, choice
-
 from polyfactory.factories.pydantic_factory import ModelFactory
 
 from .models import *
@@ -65,13 +63,3 @@ class PostLikeNotificationFactory(ModelFactory[PostLikeNotification]):
     @classmethod
     def post_uri(cls):
         return PostFactory.post_uri()
-
-class RecentNotificationFactory(ModelFactory[RecentNotifications]):
-    @classmethod
-    def items(cls) -> list:
-        return [
-            choice(
-                (NewPostNotificationFactory, CommentLikeNotificationFactory, PostLikeNotificationFactory)
-            ).build()
-            for _ in range(randint(5, 20))
-        ]

@@ -3,11 +3,7 @@ import random
 
 from fastapi import APIRouter, WebSocket
 
-from ..models import (
-    NewPostNotification,
-    CommentLikeNotification,
-    PostLikeNotification,
-)
+from ..models import SomeKindOfNotification
 from ..fakes import (
     NewPostNotificationFactory,
     CommentLikeNotificationFactory,
@@ -16,7 +12,7 @@ from ..fakes import (
 
 notification_routes = APIRouter()
 
-def make_notification(read_status: bool|None = None) -> NewPostNotification|CommentLikeNotification|PostLikeNotification:
+def _make_notification(read_status: bool|None = None) -> SomeKindOfNotification:
     func = random.choice(
         (NewPostNotificationFactory, CommentLikeNotificationFactory, PostLikeNotificationFactory)
     ).build
@@ -25,9 +21,9 @@ def make_notification(read_status: bool|None = None) -> NewPostNotification|Comm
     return func(is_read=read_status)
 
 @notification_routes.get("/")
-async def list_notifications() -> list[NewPostNotification|CommentLikeNotification|PostLikeNotification]:
+async def list_notifications() -> list[SomeKindOfNotification]:
     return sorted([
-        make_notification()
+        _make_notification()
         for _ in range(random.randint(5, 20))
     ], key=lambda x: x.is_read)
 
@@ -35,5 +31,5 @@ async def list_notifications() -> list[NewPostNotification|CommentLikeNotificati
 async def live_feed(ws: WebSocket):
     await ws.accept()
     while True:
-        await ws.send_text(make_notification(False).model_dump_json())
+        await ws.send_text(_make_notification(False).model_dump_json())
         await asyncio.sleep(random.randrange(2.0, 10))
