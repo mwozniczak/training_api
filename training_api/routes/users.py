@@ -17,6 +17,9 @@ async def list_all_users(
     page: int = Query(0, ge=0, le=TOTAL_USERS),
     items_per_page: int = Query(20, ge=1, le=100)
 ) -> PaginatedObject[User]:
+    """
+    Lists all users of this service, paged for your (and our server's) convenience
+    """
     return paginate(
         PREGENS,
         page,
@@ -25,6 +28,9 @@ async def list_all_users(
 
 @user_routes.get("/{user_id}")
 async def get_specific_user(user_id: int) -> User:
+    """
+    Retrieve data of a specific user, identified by a numeric user ID
+    """
     if user_id not in range(TOTAL_USERS):
         raise HTTPException(404)
     return PREGENS[user_id]

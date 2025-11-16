@@ -22,6 +22,9 @@ def _make_notification(read_status: bool|None = None) -> SomeKindOfNotification:
 
 @notification_routes.get("/")
 async def list_notifications() -> list[SomeKindOfNotification]:
+    """
+    Retrieves a list of recent notifications, sorted by whether they've been read.
+    """
     return sorted([
         _make_notification()
         for _ in range(random.randint(5, 20))
@@ -29,6 +32,9 @@ async def list_notifications() -> list[SomeKindOfNotification]:
 
 @notification_routes.websocket("/feed")
 async def live_feed(ws: WebSocket):
+    """
+    Live updates for notifications
+    """
     await ws.accept()
     while True:
         await ws.send_text(_make_notification(False).model_dump_json())
