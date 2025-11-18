@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import random
 
 from fastapi import APIRouter, WebSocket
@@ -12,13 +13,16 @@ from ..fakes import (
 
 notification_routes = APIRouter()
 
-def _make_notification(read_status: bool|None = None) -> SomeKindOfNotification:
+def _make_notification(read_status: bool|None = None, now: bool = False) -> SomeKindOfNotification:
     func = random.choice(
         (NewPostNotificationFactory, CommentLikeNotificationFactory, PostLikeNotificationFactory)
     ).build
-    if read_status is None:
-        return func()
-    return func(is_read=read_status)
+    kwargs = {}
+    if read_status is not None:
+        kwargs["is_read"] = read_status
+    if now:
+        kwargs["timestamp"] = datetime.datetime.now()
+    return func(**kwargs)
 
 @notification_routes.get("/")
 async def list_notifications() -> list[SomeKindOfNotification]:
@@ -28,7 +32,7 @@ async def list_notifications() -> list[SomeKindOfNotification]:
     return sorted([
         _make_notification()
         for _ in range(random.randint(5, 20))
-    ], key=lambda x: x.is_read)
+    ], key=lambda x: (x.is_read, x.timestamp))
 
 @notification_routes.websocket("/feed")
 async def live_feed(ws: WebSocket):
@@ -37,5 +41,5 @@ async def live_feed(ws: WebSocket):
     """
     await ws.accept()
     while True:
-        await ws.send_text(_make_notification(False).model_dump_json())
+        await ws.send_text(_make_notification(False, True).model_dump_json())
         await asyncio.sleep(random.randrange(2.0, 10))
