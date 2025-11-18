@@ -40,6 +40,9 @@ async def live_feed(ws: WebSocket):
     Live updates for notifications
     """
     await ws.accept()
-    while True:
-        await ws.send_text(_make_notification(False, True).model_dump_json())
-        await asyncio.sleep(random.randrange(2.0, 10))
+    try:
+        while True:
+            await ws.send_text(_make_notification(False, True).model_dump_json())
+            await asyncio.sleep(random.randrange(2.0, 10))
+    except:
+        pass
